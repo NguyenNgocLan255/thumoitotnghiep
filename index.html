@@ -558,15 +558,6 @@
           <label for="fIntro">Đoạn mở đầu</label>
           <textarea id="fIntro">Sau một hành trình dài với deadline, bài tập và những đêm “cố thêm chút nữa”, cuối cùng mình cũng đến ngày được mặc áo cử nhân thật rồi!</textarea>
         </div>
-        <div class="field full">
-          <label for="musicFile">Nhạc nền riêng (MP3 / M4A / WAV)</label>
-          <div class="filebox">
-            <input id="musicFile" type="file" accept="audio/*" />
-            <div class="help">
-              Nếu không chọn file, web dùng một giai điệu nền nhẹ được tạo trực tiếp trong trình duyệt.
-              File nhạc riêng không được nhúng cố định vào HTML; khi gửi web lên mạng, bạn nên đặt file nhạc cùng thư mục với trang.
-            </div>
-          </div>
         </div>
       </div>
 
@@ -577,7 +568,7 @@
     </section>
   </div>
 
-  <audio id="customAudio" loop preload="auto"></audio>
+  <audio id="customAudio" src="music.mp3" loop preload="auto"></audio>
   <div class="toast" id="toast" aria-live="polite"></div>
 
 <script>
@@ -601,7 +592,6 @@
   let opened = false;
   let audioCtx = null;
   let synthTimer = null;
-  let customAudioUrl = null;
 
   // --- basic in-page memory (URL query only; no storage dependency)
   function loadFromUrl(){
@@ -751,8 +741,14 @@
 
     const audio = q("customAudio");
     if(audio.src){
-      audio.volume = 0.35;
-      audio.play().catch(() => {});
+      audio.volume = 0.32;
+      audio.play().catch(() => {
+        // Nếu music.mp3 không tải được, dùng giai điệu dự phòng.
+        ensureAudioContext();
+        if(synthTimer) clearInterval(synthTimer);
+        playSynthCycle();
+        synthTimer = setInterval(playSynthCycle, 6000);
+      });
       return;
     }
 
@@ -776,24 +772,6 @@
     q("musicBtn").textContent = musicOn ? "🔊 Nhạc: Bật" : "🔇 Nhạc: Tắt";
     if(musicOn && opened) startMusic();
     else stopMusic();
-  });
-
-  q("musicFile").addEventListener("change", e => {
-    const file = e.target.files && e.target.files[0];
-    if(!file) return;
-
-    if(customAudioUrl) URL.revokeObjectURL(customAudioUrl);
-    customAudioUrl = URL.createObjectURL(file);
-    const audio = q("customAudio");
-    audio.src = customAudioUrl;
-    audio.load();
-
-    if(opened && musicOn){
-      stopMusic();
-      audio.volume = 0.35;
-      audio.play().catch(() => {});
-    }
-    showToast("Đã chọn nhạc riêng 🎵");
   });
 
   // --- editor
@@ -834,12 +812,7 @@
   q("resetBtn").addEventListener("click", () => {
     state = {...defaults};
     history.replaceState({}, "", adminMode ? location.pathname + "?admin=1" : location.pathname);
-    q("musicFile").value = "";
-    if(customAudioUrl){
-      URL.revokeObjectURL(customAudioUrl);
-      customAudioUrl = null;
-    }
-    q("customAudio").removeAttribute("src");
+    q("customAudio").src = "music.mp3";
     q("customAudio").load();
     render();
     showToast("Đã đặt lại nội dung.");
