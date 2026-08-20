@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fff8ec" />
+  <title>Thư mời dự lễ tốt nghiệp</title>
+  <style>
+    :root{
+      --navy:#18334f;
+      --navy2:#294e70;
+      --gold:#d5aa52;
+      --cream:#fff8ea;
+      --paper:#fffdf8;
+      --ink:#243443;
+      --muted:#6e7b86;
+      --line:#eadabd;
+      --shadow:0 28px 70px rgba(34,47,60,.16);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--ink);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(213,170,82,.20), transparent 28%),
+        radial-gradient(circle at 92% 18%, rgba(24,51,79,.12), transparent 26%),
+        linear-gradient(135deg,#fffdf8 0%,#fff7e8 46%,#f4efe7 100%);
+      overflow-x:hidden;
+    }
+    button,input,textarea{font:inherit}
+    button{cursor:pointer}
+    .hidden{display:none!important}
+
+    .admin-only{display:none!important}
+    body.admin-mode .admin-only{display:inline-flex!important}
+    body.admin-mode .admin-banner{display:block!important}
+    .admin-banner{
+      padding:9px 18px;
+      background:#fff5d9;
+      color:#72561b;
+      border-bottom:1px solid #ead7a6;
+      font-size:12px;
+      text-align:center;
+    }
+
+    /* ---------- ENVELOPE INTRO ---------- */
+    .intro-screen{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:28px 16px;
+      position:relative;
+      z-index:10;
+      overflow:hidden;
+    }
+    .intro-screen.fade-out{
+      animation:screenOut .85s ease forwards;
+      pointer-events:none;
+    }
+    @keyframes screenOut{
+      to{opacity:0; transform:scale(1.03); visibility:hidden}
+    }
+    .intro-copy{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .intro-copy .tiny{
+      color:#86671f;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      font-weight:800;
+    }
+    .intro-copy h1{
+      margin:9px 0 6px;
+      color:var(--navy);
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:clamp(30px,7vw,50px);
+      line-height:1.05;
+    }
+    .intro-copy p{
+      margin:0;color:var(--muted);font-size:15px
+    }
+    .envelope-wrap{
+      position:relative;
+      width:min(390px,88vw);
+      height:270px;
+      perspective:1000px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .envelope{
+      position:absolute;left:0;right:0;bottom:0;height:235px;
+      border-radius:12px;
+      background:#f3dcae;
+      box-shadow:0 28px 55px rgba(69,52,22,.20);
+      transition:transform .4s ease;
+    }
+    .envelope-wrap:hover .envelope{transform:translateY(-4px)}
+    .envelope:before{
+      content:"";
+      position:absolute;inset:0;
+      clip-path:polygon(0 0,50% 58%,100% 0,100% 100%,0 100%);
+      background:linear-gradient(145deg,#efd49c,#e7c887);
+      border-radius:12px;
+      z-index:3;
+    }
+    .envelope:after{
+      content:"";
+      position:absolute;inset:0;
+      clip-path:polygon(0 100%,50% 46%,100% 100%);
+      background:linear-gradient(180deg,#f7e7c4,#ecd39d);
+      border-radius:12px;
+      z-index:4;
+    }
+    .flap{
+      position:absolute;left:0;right:0;top:0;height:135px;
+      background:linear-gradient(155deg,#f0d49b,#e7c27a);
+      clip-path:polygon(0 0,100% 0,50% 100%);
+      transform-origin:top center;
+      z-index:6;
+      transition:transform .95s cubic-bezier(.2,.75,.2,1);
+      backface-visibility:hidden;
+    }
+    .letter-preview{
+      position:absolute;
+      width:82%;height:190px;
+      left:9%;top:18px;
+      background:var(--paper);
+      border:1px solid #ead6af;
+      border-radius:14px 14px 6px 6px;
+      z-index:2;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      text-align:center;
+      padding:22px;
+      transition:transform 1s .35s cubic-bezier(.2,.75,.25,1), opacity .35s;
+    }
+    .letter-preview .cap{font-size:42px}
+    .letter-preview strong{
+      color:var(--navy);
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:25px;
+      margin-top:7px;
+    }
+    .seal{
+      position:absolute;left:50%;top:106px;transform:translateX(-50%);
+      width:62px;height:62px;border-radius:50%;
+      display:grid;place-items:center;
+      background:#af2738;color:white;
+      font-family:Georgia,serif;font-weight:800;font-size:25px;
+      border:4px solid rgba(255,255,255,.28);
+      z-index:8;
+      box-shadow:0 7px 16px rgba(96,20,31,.25);
+      transition:opacity .28s, transform .28s;
+    }
+    .open-hint{
+      position:absolute;left:50%;bottom:-44px;transform:translateX(-50%);
+      white-space:nowrap;color:var(--navy);
+      font-size:14px;font-weight:800;
+      animation:pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse{50%{opacity:.55;transform:translateX(-50%) translateY(3px)}}
+    .envelope-wrap.open .flap{transform:rotateX(180deg)}
+    .envelope-wrap.open .seal{opacity:0;transform:translateX(-50%) scale(.65)}
+    .envelope-wrap.open .letter-preview{transform:translateY(-145px);z-index:7}
+    .envelope-wrap.open .open-hint{opacity:0}
+
+    /* ---------- DECORATION ---------- */
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+    .confetti span{
+      position:absolute;width:8px;height:18px;border-radius:2px;opacity:.5;
+      animation:fall linear infinite;
+    }
+    @keyframes fall{from{transform:translateY(-15vh) rotate(0)}to{transform:translateY(115vh) rotate(720deg)}}
+
+    /* ---------- INVITE ---------- */
+    .page{
+      position:relative;z-index:1;
+      min-height:100vh;
+      padding:32px 16px 90px;
+      opacity:0;transform:translateY(28px);
+      transition:opacity .8s ease,transform .8s ease;
+    }
+    .page.visible{opacity:1;transform:none}
+    .invite{
+      width:min(980px,100%);
+      margin:0 auto;
+      background:rgba(255,253,248,.94);
+      border:1px solid rgba(213,170,82,.43);
+      border-radius:30px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(12px);
+    }
+    .toolbar{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:14px 18px;
+      background:rgba(255,255,255,.66);
+      border-bottom:1px solid var(--line);
+    }
+    .brand{display:flex;align-items:center;gap:9px;color:var(--navy);font-weight:800}
+    .brand-mark{
+      width:38px;height:38px;display:grid;place-items:center;border-radius:12px;
+      background:var(--navy);color:#fff;font-size:19px
+    }
+    .tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .btn{
+      border:1px solid #d6dfe7;background:#fff;color:var(--navy);
+      padding:9px 12px;border-radius:11px;font-weight:750;
+      transition:.18s ease;
+    }
+    .btn:hover{transform:translateY(-1px);box-shadow:0 7px 16px rgba(23,50,77,.10)}
+    .btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+    }
+    .main{
+      padding:48px 48px 42px;
+    }
+    .eyebrow{
+      display:inline-block;
+      padding:7px 11px;
+      border:1px solid #edd797;
+      background:#fff4d4;
+      color:#7b5c1d;
+      border-radius:999px;
+      font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.09em;
+    }
+    .main h2{
+      margin:19px 0 13px;
+      color:var(--navy);
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:clamp(38px,6vw,68px);
+      line-height:.98;
+      letter-spacing:-.035em;
+    }
+    .subtitle{
+      margin:0;color:#52606d;font-size:18px;line-height:1.7
+    }
+    .recipient{
+      margin:25px 0 20px;
+      padding:16px 18px;
+      background:#fff9ed;
+      border-left:4px solid var(--gold);
+      border-radius:0 15px 15px 0;
+      font-size:18px;line-height:1.6;
+    }
+    .recipient strong{color:var(--navy)}
+    .quote{font-size:16px;line-height:1.75;color:#344452}
+    .quote em{font-style:normal;color:#7c5e20;font-weight:800}
+
+    /* Countdown */
+    .countdown-wrap{
+      margin:26px 0 23px;
+      padding:17px;
+      background:linear-gradient(135deg,rgba(24,51,79,.055),rgba(213,170,82,.08));
+      border:1px solid #e7dbc6;
+      border-radius:18px;
+    }
+    .countdown-head{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin-bottom:12px;
+    }
+    .countdown-head span:first-child{
+      font-size:13px;font-weight:850;color:var(--navy);text-transform:uppercase;letter-spacing:.07em
+    }
+    .countdown-status{font-size:12px;color:var(--muted)}
+    .countdown{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+    }
+    .timebox{
+      text-align:center;background:#fff;border:1px solid #e6ddcd;border-radius:14px;padding:12px 6px;
+    }
+    .timebox b{
+      display:block;color:var(--navy);font-family:Georgia,serif;font-size:29px;line-height:1
+    }
+    .timebox small{display:block;margin-top:5px;color:var(--muted);font-size:11px;text-transform:uppercase;font-weight:750}
+
+    .details{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px
+    }
+    .detail{
+      min-height:84px;padding:14px 15px;
+      border:1px solid #e7dcc8;border-radius:15px;background:#fff;
+    }
+    .detail .label{
+      display:block;color:var(--muted);font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;
+    }
+    .detail .value{font-weight:800;color:var(--navy);line-height:1.4;overflow-wrap:anywhere}
+
+    .side{
+      position:relative;
+      overflow:hidden;
+      min-height:650px;
+      padding:38px 30px;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(155deg,var(--navy),var(--navy2));
+      color:white;text-align:center;
+    }
+    .side:before,.side:after{
+      content:"";position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.16)
+    }
+    .side:before{width:440px;height:440px;right:-245px;top:-175px}
+    .side:after{width:300px;height:300px;left:-170px;bottom:-90px}
+    .side-inner{position:relative;z-index:1}
+    .big-cap{font-size:91px;animation:bob 3.1s ease-in-out infinite}
+    @keyframes bob{50%{transform:translateY(-8px) rotate(-2deg)}}
+    .side h3{font-family:Georgia,serif;font-size:33px;line-height:1.15;margin:12px 0}
+    .side p{color:#dbe7ef;line-height:1.65;max-width:300px;margin:0 auto 20px}
+    .signature{
+      display:inline-block;padding:11px 15px;border:1px solid rgba(255,255,255,.26);
+      background:rgba(255,255,255,.08);border-radius:13px;font-weight:800;
+    }
+    .music-note{
+      margin-top:18px;color:#cbdce9;font-size:12px
+    }
+
+    .footer{
+      text-align:center;color:#73808a;font-size:12px;padding:18px 22px 23px;border-top:1px solid var(--line)
+    }
+
+    /* ---------- EDITOR ---------- */
+    .editor{
+      position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;
+      padding:18px;background:rgba(15,29,42,.57);backdrop-filter:blur(7px);
+    }
+    .editor.show{display:flex}
+    .panel{
+      width:min(700px,100%);max-height:90vh;overflow:auto;
+      background:#fffdf8;border:1px solid #e8d8bb;border-radius:23px;
+      box-shadow:0 32px 80px rgba(0,0,0,.28);
+    }
+    .panel-head{
+      position:sticky;top:0;z-index:2;background:#fffdf8;
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      padding:18px 20px;border-bottom:1px solid #eee2cc;
+    }
+    .panel-head h3{margin:0;color:var(--navy);font-size:19px}
+    .close{
+      width:38px;height:38px;border:0;border-radius:50%;background:#f3ede3;font-size:21px;color:var(--ink)
+    }
+    .form{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;padding:20px
+    }
+    .field{display:flex;flex-direction:column;gap:7px}
+    .field.full{grid-column:1/-1}
+    label{font-size:13px;color:#41505c;font-weight:800}
+    input,textarea{
+      width:100%;border:1px solid #d7dfe5;background:#fff;border-radius:11px;
+      padding:11px 12px;color:#21323f;outline:none;
+    }
+    input:focus,textarea:focus{border-color:#94aabe;box-shadow:0 0 0 3px rgba(41,78,112,.10)}
+    textarea{min-height:86px;resize:vertical}
+    .help{font-size:11px;color:var(--muted);line-height:1.45}
+    .filebox{
+      border:1px dashed #c9b890;border-radius:12px;padding:12px;background:#fffaf0
+    }
+    .panel-actions{
+      display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap;padding:0 20px 20px;
+    }
+    .toast{
+      position:fixed;z-index:50;left:50%;bottom:24px;transform:translate(-50%,18px);
+      opacity:0;pointer-events:none;background:var(--navy);color:#fff;padding:11px 15px;border-radius:11px;
+      transition:.22s ease;box-shadow:0 12px 30px rgba(24,51,79,.25)
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+
+    @media (max-width:800px){
+      .hero{grid-template-columns:1fr}
+      .side{min-height:335px}
+      .main{padding:36px 23px 30px}
+      .details{grid-template-columns:1fr}
+      .toolbar{align-items:flex-start}
+      .brand span:last-child{display:none}
+      .form{grid-template-columns:1fr}
+      .field.full{grid-column:auto}
+      .countdown{gap:6px}
+      .timebox b{font-size:25px}
+    }
+    @media (max-width:430px){
+      .tools .btn{padding:8px 9px;font-size:12px}
+      .countdown-wrap{padding:13px 10px}
+      .timebox{padding:10px 3px}
+      .timebox b{font-size:22px}
+      .timebox small{font-size:9px}
+    }
+    @media print{
+      body{background:white}
+      .intro-screen,.toolbar,.footer,.editor,.toast,.confetti{display:none!important}
+      .page{opacity:1!important;transform:none!important;padding:0}
+      .invite{box-shadow:none;border:0;border-radius:0}
+    }
+  </style>
+</head>
+<body>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+  <section class="intro-screen" id="introScreen">
+    <div>
+      <div class="intro-copy">
+        <div class="tiny">Bạn có một lời mời đặc biệt ✨</div>
+        <h1>Chạm để mở phong bì</h1>
+        <p>Một cột mốc nhỏ, một niềm vui lớn.</p>
+      </div>
+
+      <div class="envelope-wrap" id="envelope" role="button" aria-label="Mở phong bì thư mời" tabindex="0">
+        <div class="envelope">
+          <div class="letter-preview">
+            <div class="cap">🎓</div>
+            <strong>Graduation Day</strong>
+          </div>
+          <div class="flap"></div>
+          <div class="seal">G</div>
+        </div>
+        <div class="open-hint">💌 Mở thư mời</div>
+      </div>
+    </div>
+  </section>
+
+  <main class="page" id="mainPage">
+    <section class="invite">
+      <div class="toolbar">
+        <div class="brand">
+          <div class="brand-mark">🎓</div>
+          <span>Graduation Invitation</span>
+        </div>
+        <div class="tools">
+          <button class="btn" id="musicBtn" type="button">🔊 Nhạc: Bật</button>
+          <button class="btn admin-only" id="shareBtn" type="button">🔗 Link gửi khách</button>
+          <button class="btn admin-only" id="printBtn" type="button">🖨 PDF</button>
+          <button class="btn primary admin-only" id="editBtn" type="button">✏️ Chỉnh sửa</button>
+        </div>
+      </div>
+
+      <div class="admin-banner admin-only" id="adminBanner">
+        🔐 Chế độ chủ thiệp — phần này chỉ hiện khi mở bằng <strong>?admin=1</strong>.
+      </div>
+
+      <div class="hero">
+        <section class="main">
+          <span class="eyebrow">✨ Một cột mốc đáng nhớ</span>
+          <h2>Thư mời<br>dự lễ tốt nghiệp</h2>
+          <p class="subtitle" id="introText">
+            Sau một hành trình dài với deadline, bài tập và những đêm “cố thêm chút nữa”,
+            cuối cùng mình cũng đến ngày được mặc áo cử nhân thật rồi!
+          </p>
+
+          <div class="recipient">
+            Trân trọng mời <strong id="guest">[TÊN NGƯỜI ĐƯỢC MỜI]</strong>
+            đến chung vui cùng mình trong ngày đặc biệt này.
+          </div>
+
+          <p class="quote">
+            Sự có mặt của bạn sẽ khiến buổi lễ này vui hơn rất nhiều —
+            <em>tốt nghiệp mà thiếu người mình quý thì ảnh đẹp đến mấy cũng vẫn thấy thiếu!</em> 😄
+          </p>
+
+          <section class="countdown-wrap" aria-label="Đếm ngược đến lễ tốt nghiệp">
+            <div class="countdown-head">
+              <span>⏳ Đếm ngược đến ngày tốt nghiệp</span>
+              <span class="countdown-status" id="countdownStatus">Hãy nhập ngày & giờ trong phần chỉnh sửa</span>
+            </div>
+            <div class="countdown" aria-live="polite">
+              <div class="timebox"><b id="days">--</b><small>Ngày</small></div>
+              <div class="timebox"><b id="hours">--</b><small>Giờ</small></div>
+              <div class="timebox"><b id="minutes">--</b><small>Phút</small></div>
+              <div class="timebox"><b id="seconds">--</b><small>Giây</small></div>
+            </div>
+          </section>
+
+          <div class="details">
+            <div class="detail">
+              <span class="label">Ngày & giờ</span>
+              <div class="value" id="datetimeDisplay">[GIỜ] • [NGÀY / THÁNG / NĂM]</div>
+            </div>
+            <div class="detail">
+              <span class="label">Địa điểm</span>
+              <div class="value" id="locationDisplay">[ĐỊA ĐIỂM TỔ CHỨC]</div>
+            </div>
+            <div class="detail">
+              <span class="label">Trường</span>
+              <div class="value" id="schoolDisplay">[TÊN TRƯỜNG]</div>
+            </div>
+            <div class="detail">
+              <span class="label">Người mời</span>
+              <div class="value" id="hostDisplay">[TÊN CỦA BẠN]</div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side">
+          <div class="side-inner">
+            <div class="big-cap">🎓</div>
+            <h3>Cuối cùng,<br>mình tốt nghiệp thật rồi!</h3>
+            <p>Một tấm bằng, rất nhiều kỷ niệm và một buổi lễ mình rất mong được chia sẻ cùng bạn.</p>
+            <div class="signature">Hẹn gặp bạn nhé! ✨</div>
+            <div class="music-note">♪ Nhạc nền bắt đầu sau khi mở phong bì</div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="footer">
+        Bạn có thể tự điền toàn bộ thông tin • Nhạc riêng chỉ phát trên thiết bị đang mở trang
+      </div>
+    </section>
+  </main>
+
+  <div class="editor" id="editor">
+    <section class="panel">
+      <div class="panel-head">
+        <h3>Chỉnh sửa thư mời</h3>
+        <button class="close" id="closeBtn" type="button" aria-label="Đóng">×</button>
+      </div>
+
+      <div class="form">
+        <div class="field">
+          <label for="fGuest">Tên người được mời</label>
+          <input id="fGuest" placeholder="Ví dụ: Anh Minh / Cô Lan..." />
+        </div>
+        <div class="field">
+          <label for="fHost">Tên của bạn</label>
+          <input id="fHost" placeholder="Ví dụ: Nguyễn Văn A" />
+        </div>
+        <div class="field">
+          <label for="fSchool">Tên trường</label>
+          <input id="fSchool" placeholder="Ví dụ: Trường Đại học..." />
+        </div>
+        <div class="field">
+          <label for="fDateTime">Ngày & giờ tốt nghiệp</label>
+          <input id="fDateTime" type="datetime-local" />
+          <div class="help">Mốc này được dùng trực tiếp cho bộ đếm ngược.</div>
+        </div>
+        <div class="field full">
+          <label for="fLocation">Địa điểm</label>
+          <input id="fLocation" placeholder="Ví dụ: Hội trường A, ..." />
+        </div>
+        <div class="field full">
+          <label for="fIntro">Đoạn mở đầu</label>
+          <textarea id="fIntro">Sau một hành trình dài với deadline, bài tập và những đêm “cố thêm chút nữa”, cuối cùng mình cũng đến ngày được mặc áo cử nhân thật rồi!</textarea>
+        </div>
+        <div class="field full">
+          <label for="musicFile">Nhạc nền riêng (MP3 / M4A / WAV)</label>
+          <div class="filebox">
+            <input id="musicFile" type="file" accept="audio/*" />
+            <div class="help">
+              Nếu không chọn file, web dùng một giai điệu nền nhẹ được tạo trực tiếp trong trình duyệt.
+              File nhạc riêng không được nhúng cố định vào HTML; khi gửi web lên mạng, bạn nên đặt file nhạc cùng thư mục với trang.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-actions">
+        <button class="btn" id="resetBtn" type="button">Đặt lại</button>
+        <button class="btn primary" id="saveBtn" type="button">Lưu thay đổi</button>
+      </div>
+    </section>
+  </div>
+
+  <audio id="customAudio" loop preload="auto"></audio>
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+<script>
+(() => {
+  const q = id => document.getElementById(id);
+  const defaults = {
+    guest:"[TÊN NGƯỜI ĐƯỢC MỜI]",
+    host:"[TÊN CỦA BẠN]",
+    school:"[TÊN TRƯỜNG]",
+    location:"[ĐỊA ĐIỂM TỔ CHỨC]",
+    datetime:"",
+    intro:"Sau một hành trình dài với deadline, bài tập và những đêm “cố thêm chút nữa”, cuối cùng mình cũng đến ngày được mặc áo cử nhân thật rồi!"
+  };
+
+  const adminMode = new URLSearchParams(location.search).get("admin") === "1";
+  if(adminMode) document.body.classList.add("admin-mode");
+
+  let state = {...defaults};
+  let countdownTimer = null;
+  let musicOn = true;
+  let opened = false;
+  let audioCtx = null;
+  let synthTimer = null;
+  let customAudioUrl = null;
+
+  // --- basic in-page memory (URL query only; no storage dependency)
+  function loadFromUrl(){
+    const p = new URLSearchParams(location.search);
+    state = {
+      guest: p.get("guest") || defaults.guest,
+      host: p.get("host") || defaults.host,
+      school: p.get("school") || defaults.school,
+      location: p.get("place") || defaults.location,
+      datetime: p.get("date") || defaults.datetime,
+      intro: p.get("intro") || defaults.intro
+    };
+  }
+
+  function formatDateTime(value){
+    if(!value) return "[GIỜ] • [NGÀY / THÁNG / NĂM]";
+    const d = new Date(value);
+    if(Number.isNaN(d.getTime())) return value;
+    return new Intl.DateTimeFormat("vi-VN", {
+      hour:"2-digit", minute:"2-digit",
+      day:"2-digit", month:"2-digit", year:"numeric"
+    }).format(d);
+  }
+
+  function render(){
+    q("guest").textContent = state.guest || defaults.guest;
+    q("hostDisplay").textContent = state.host || defaults.host;
+    q("schoolDisplay").textContent = state.school || defaults.school;
+    q("locationDisplay").textContent = state.location || defaults.location;
+    q("datetimeDisplay").textContent = formatDateTime(state.datetime);
+    q("introText").textContent = state.intro || defaults.intro;
+
+    q("fGuest").value = state.guest.startsWith("[") ? "" : state.guest;
+    q("fHost").value = state.host.startsWith("[") ? "" : state.host;
+    q("fSchool").value = state.school.startsWith("[") ? "" : state.school;
+    q("fLocation").value = state.location.startsWith("[") ? "" : state.location;
+    q("fDateTime").value = state.datetime || "";
+    q("fIntro").value = state.intro || defaults.intro;
+
+    startCountdown();
+  }
+
+  // --- countdown
+  function startCountdown(){
+    clearInterval(countdownTimer);
+    updateCountdown();
+    countdownTimer = setInterval(updateCountdown, 1000);
+  }
+
+  function updateCountdown(){
+    const ids = ["days","hours","minutes","seconds"];
+    if(!state.datetime){
+      ids.forEach(id => q(id).textContent = "--");
+      q("countdownStatus").textContent = "Hãy nhập ngày & giờ trong phần chỉnh sửa";
+      return;
+    }
+
+    const target = new Date(state.datetime).getTime();
+    if(Number.isNaN(target)){
+      ids.forEach(id => q(id).textContent = "--");
+      q("countdownStatus").textContent = "Ngày giờ chưa hợp lệ";
+      return;
+    }
+
+    const diff = target - Date.now();
+    if(diff <= 0){
+      q("days").textContent = "00";
+      q("hours").textContent = "00";
+      q("minutes").textContent = "00";
+      q("seconds").textContent = "00";
+      q("countdownStatus").textContent = "🎉 Hôm nay là ngày đặc biệt!";
+      return;
+    }
+
+    const totalSec = Math.floor(diff/1000);
+    const days = Math.floor(totalSec/86400);
+    const hours = Math.floor((totalSec%86400)/3600);
+    const minutes = Math.floor((totalSec%3600)/60);
+    const seconds = totalSec%60;
+
+    q("days").textContent = String(days).padStart(2,"0");
+    q("hours").textContent = String(hours).padStart(2,"0");
+    q("minutes").textContent = String(minutes).padStart(2,"0");
+    q("seconds").textContent = String(seconds).padStart(2,"0");
+    q("countdownStatus").textContent = "Cùng đếm từng khoảnh khắc ✨";
+  }
+
+  // --- envelope open
+  function openEnvelope(){
+    if(opened) return;
+    opened = true;
+    q("envelope").classList.add("open");
+    if(musicOn) startMusic();
+
+    setTimeout(() => {
+      q("introScreen").classList.add("fade-out");
+      q("mainPage").classList.add("visible");
+      setTimeout(() => q("introScreen").classList.add("hidden"), 850);
+    }, 1450);
+  }
+
+  q("envelope").addEventListener("click", openEnvelope);
+  q("envelope").addEventListener("keydown", e => {
+    if(e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openEnvelope();
+    }
+  });
+
+  // --- music: custom file or built-in soft synth
+  function ensureAudioContext(){
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(audioCtx.state === "suspended") audioCtx.resume();
+  }
+
+  const notes = [
+    [261.63,0.00],[329.63,0.45],[392.00,0.90],[523.25,1.35],
+    [392.00,1.80],[329.63,2.25],[293.66,2.70],[349.23,3.15],
+    [440.00,3.60],[392.00,4.05],[329.63,4.50],[261.63,4.95]
+  ];
+
+  function playSynthCycle(){
+    if(!musicOn || q("customAudio").src) return;
+    ensureAudioContext();
+    const start = audioCtx.currentTime + 0.05;
+
+    notes.forEach(([freq, offset]) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+
+      gain.gain.setValueAtTime(0.0001, start + offset);
+      gain.gain.exponentialRampToValueAtTime(0.032, start + offset + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.38);
+
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(start + offset);
+      osc.stop(start + offset + 0.42);
+    });
+  }
+
+  function startMusic(){
+    if(!musicOn) return;
+
+    const audio = q("customAudio");
+    if(audio.src){
+      audio.volume = 0.35;
+      audio.play().catch(() => {});
+      return;
+    }
+
+    ensureAudioContext();
+    if(synthTimer) clearInterval(synthTimer);
+    playSynthCycle();
+    synthTimer = setInterval(playSynthCycle, 6000);
+  }
+
+  function stopMusic(){
+    const audio = q("customAudio");
+    audio.pause();
+    if(synthTimer){
+      clearInterval(synthTimer);
+      synthTimer = null;
+    }
+  }
+
+  q("musicBtn").addEventListener("click", () => {
+    musicOn = !musicOn;
+    q("musicBtn").textContent = musicOn ? "🔊 Nhạc: Bật" : "🔇 Nhạc: Tắt";
+    if(musicOn && opened) startMusic();
+    else stopMusic();
+  });
+
+  q("musicFile").addEventListener("change", e => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+
+    if(customAudioUrl) URL.revokeObjectURL(customAudioUrl);
+    customAudioUrl = URL.createObjectURL(file);
+    const audio = q("customAudio");
+    audio.src = customAudioUrl;
+    audio.load();
+
+    if(opened && musicOn){
+      stopMusic();
+      audio.volume = 0.35;
+      audio.play().catch(() => {});
+    }
+    showToast("Đã chọn nhạc riêng 🎵");
+  });
+
+  // --- editor
+  function openEditor(){ if(adminMode) q("editor").classList.add("show"); }
+  function closeEditor(){ q("editor").classList.remove("show"); }
+
+  q("editBtn").addEventListener("click", openEditor);
+  q("closeBtn").addEventListener("click", closeEditor);
+  q("editor").addEventListener("click", e => { if(e.target === q("editor")) closeEditor(); });
+  document.addEventListener("keydown", e => { if(e.key === "Escape") closeEditor(); });
+
+  q("saveBtn").addEventListener("click", () => {
+    state = {
+      guest: q("fGuest").value.trim() || defaults.guest,
+      host: q("fHost").value.trim() || defaults.host,
+      school: q("fSchool").value.trim() || defaults.school,
+      location: q("fLocation").value.trim() || defaults.location,
+      datetime: q("fDateTime").value || "",
+      intro: q("fIntro").value.trim() || defaults.intro
+    };
+
+    const url = new URL(location.href);
+    url.search = "";
+    if(adminMode) url.searchParams.set("admin","1");
+    if(!state.guest.startsWith("[")) url.searchParams.set("guest", state.guest);
+    if(!state.host.startsWith("[")) url.searchParams.set("host", state.host);
+    if(!state.school.startsWith("[")) url.searchParams.set("school", state.school);
+    if(!state.location.startsWith("[")) url.searchParams.set("place", state.location);
+    if(state.datetime) url.searchParams.set("date", state.datetime);
+    if(state.intro !== defaults.intro) url.searchParams.set("intro", state.intro);
+    history.replaceState({}, "", url);
+
+    render();
+    closeEditor();
+    showToast("Đã cập nhật thư mời!");
+  });
+
+  q("resetBtn").addEventListener("click", () => {
+    state = {...defaults};
+    history.replaceState({}, "", adminMode ? location.pathname + "?admin=1" : location.pathname);
+    q("musicFile").value = "";
+    if(customAudioUrl){
+      URL.revokeObjectURL(customAudioUrl);
+      customAudioUrl = null;
+    }
+    q("customAudio").removeAttribute("src");
+    q("customAudio").load();
+    render();
+    showToast("Đã đặt lại nội dung.");
+  });
+
+
+  q("shareBtn").addEventListener("click", async () => {
+    const url = new URL(location.href);
+    url.searchParams.delete("admin");
+    const publicUrl = url.toString();
+    try{
+      await navigator.clipboard.writeText(publicUrl);
+      showToast("Đã sao chép link gửi khách — không có nút chỉnh sửa.");
+    }catch(e){
+      window.prompt("Sao chép link này để gửi khách:", publicUrl);
+    }
+  });
+
+  q("printBtn").addEventListener("click", () => window.print());
+
+  function showToast(text){
+    const t = q("toast");
+    t.textContent = text;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2200);
+  }
+
+  // confetti
+  const colors = ["#18334f","#d5aa52","#b78e3d","#88a5bd","#b87468"];
+  const holder = q("confetti");
+  for(let i=0;i<24;i++){
+    const s = document.createElement("span");
+    s.style.left = Math.random()*100 + "vw";
+    s.style.top = (-30 - Math.random()*160) + "px";
+    s.style.background = colors[i % colors.length];
+    s.style.animationDuration = (10 + Math.random()*10) + "s";
+    s.style.animationDelay = (-Math.random()*15) + "s";
+    holder.appendChild(s);
+  }
+
+  loadFromUrl();
+  render();
+})();
+</script>
+</body>
+</html>
