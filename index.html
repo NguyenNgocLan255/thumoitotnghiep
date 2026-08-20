@@ -38,6 +38,8 @@
     .hidden{display:none!important}
 
     .admin-only{display:none!important}
+
+    body:not(.admin-mode) .admin-only{display:none!important}
     body.admin-mode .admin-only{display:inline-flex!important}
     body.admin-mode .admin-banner{display:block!important}
     .admin-banner{
@@ -350,6 +352,10 @@
       padding:18px;background:rgba(15,29,42,.57);backdrop-filter:blur(7px);
     }
     .editor.show{display:flex}
+
+    /* Admin editor must never appear on public guest links */
+    body:not(.admin-mode) .admin-editor{display:none!important}
+    body.admin-mode .admin-editor.show{display:flex!important}
     .panel{
       width:min(700px,100%);max-height:90vh;overflow:auto;
       background:#fffdf8;border:1px solid #e8d8bb;border-radius:23px;
@@ -477,7 +483,7 @@
 
           <p class="quote">
             Sự có mặt của bạn sẽ khiến buổi lễ này vui hơn rất nhiều —
-            <em>tốt nghiệp mà thiếu người mình quý thì ảnh đẹp đến mấy cũng vẫn thấy thiếu!</em> 😄
+            <em>tốt nghiệp mà thiếu người mình quý thì ảnh đẹp đến mấy cũng vẫn thấy thiếu!</em> 
           </p>
 
           <section class="countdown-wrap" aria-label="Đếm ngược đến lễ tốt nghiệp">
@@ -525,7 +531,7 @@
 </section>
   </main>
 
-  <div class="editor" id="editor">
+  <div class="editor admin-editor" id="editor">
     <section class="panel">
       <div class="panel-head">
         <h3>Chỉnh sửa thư mời</h3>
@@ -562,8 +568,7 @@
       </div>
 
       <div class="panel-actions">
-        <button class="btn" id="resetBtn" type="button">Đặt lại</button>
-        <button class="btn primary" id="saveBtn" type="button">Lưu thay đổi</button>
+<button class="btn primary admin-only" id="saveBtn" type="button">Lưu thay đổi</button>
       </div>
     </section>
   </div>
@@ -784,6 +789,7 @@
   document.addEventListener("keydown", e => { if(e.key === "Escape") closeEditor(); });
 
   q("saveBtn").addEventListener("click", () => {
+    if(!adminMode) return;
     state = {
       guest: q("fGuest").value.trim() || defaults.guest,
       host: q("fHost").value.trim() || defaults.host,
@@ -807,15 +813,6 @@
     render();
     closeEditor();
     showToast("Đã cập nhật thư mời!");
-  });
-
-  q("resetBtn").addEventListener("click", () => {
-    state = {...defaults};
-    history.replaceState({}, "", adminMode ? location.pathname + "?admin=1" : location.pathname);
-    q("customAudio").src = "music.mp3";
-    q("customAudio").load();
-    render();
-    showToast("Đã đặt lại nội dung.");
   });
 
 
